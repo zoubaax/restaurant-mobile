@@ -44,6 +44,7 @@ export default function App() {
     
     let areaName = category.name;
     if (areaName === 'Marocain') areaName = 'Moroccan';
+    if (areaName === 'American') areaName = 'United States';
     
     fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?a=${areaName}`)
       .then(res => res.json())
