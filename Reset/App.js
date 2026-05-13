@@ -1,4 +1,3 @@
-import 'react-native-url-polyfill/auto';
 import React, { useState, useEffect } from 'react';
 import { cuisines as initialCuisines } from './src/data/cuisines';
 import { WelcomeScreen } from './src/screens/WelcomeScreen';
@@ -103,17 +102,13 @@ export default function App() {
 
   async function handleSaveMeal(meal) {
     try {
-      const { data, error } = await supabase
-        .from('favorites')
-        .insert([
-          { 
-            meal_id: meal.idMeal, 
-            meal_name: meal.strMeal, 
-            meal_image: meal.strMealThumb,
-            category: selectedCategory.name
-          }
-        ]);
-        
+      const { data, error } = await supabase.insert('favorites', {
+        meal_id: meal.idMeal,
+        meal_name: meal.strMeal,
+        meal_image: meal.strMealThumb,
+        category: selectedCategory.name,
+      });
+
       if (error) throw error;
       alert('Meal saved to favorites!');
     } catch (error) {
