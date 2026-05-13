@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { 
-  SafeAreaView, 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet, 
-  KeyboardAvoidingView, 
+import {
+  SafeAreaView,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  KeyboardAvoidingView,
   Platform,
   ActivityIndicator
 } from 'react-native';
@@ -27,7 +27,7 @@ export const LoginScreen = ({ onLogin, onSwitchToRegister }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.content}
       >
@@ -42,7 +42,7 @@ export const LoginScreen = ({ onLogin, onSwitchToRegister }) => {
         <View style={styles.form}>
           <View style={styles.inputContainer}>
             <Feather name="mail" size={20} color={COLORS.secondary} style={styles.inputIcon} />
-            <TextInput 
+            <TextInput
               style={styles.input}
               placeholder="Email Address"
               placeholderTextColor={COLORS.secondary}
@@ -55,7 +55,7 @@ export const LoginScreen = ({ onLogin, onSwitchToRegister }) => {
 
           <View style={styles.inputContainer}>
             <Feather name="lock" size={20} color={COLORS.secondary} style={styles.inputIcon} />
-            <TextInput 
+            <TextInput
               style={styles.input}
               placeholder="Password"
               placeholderTextColor={COLORS.secondary}
@@ -65,8 +65,8 @@ export const LoginScreen = ({ onLogin, onSwitchToRegister }) => {
             />
           </View>
 
-          <TouchableOpacity 
-            style={styles.loginButton} 
+          <TouchableOpacity
+            style={styles.loginButton}
             onPress={handleLogin}
             disabled={loading}
           >

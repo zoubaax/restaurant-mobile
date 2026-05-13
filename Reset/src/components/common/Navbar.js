@@ -3,19 +3,24 @@ import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../styles/theme';
 
-export const Navbar = ({ onLogout }) => (
+export const Navbar = ({ onLogout, onViewFavorites }) => (
   <View style={styles.navBar}>
     <View style={styles.navBrand}>
       <TouchableOpacity style={styles.logoCircle} onPress={onLogout}>
         <Feather name="log-out" size={16} color="#ffffff" />
       </TouchableOpacity>
     </View>
-    <TouchableOpacity style={styles.profileButton}>
-      <Image 
-        source={{ uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100' }} 
-        style={styles.profileImage}
-      />
-    </TouchableOpacity>
+    <View style={styles.navActions}>
+      <TouchableOpacity style={styles.actionButton} onPress={onViewFavorites}>
+        <Feather name="heart" size={20} color={COLORS.primary} />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.profileButton}>
+        <Image 
+          source={{ uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100' }} 
+          style={styles.profileImage}
+        />
+      </TouchableOpacity>
+    </View>
   </View>
 );
 
@@ -34,13 +39,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  logoCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: COLORS.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
     marginRight: 10,
   },
   profileButton: {

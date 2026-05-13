@@ -7,10 +7,10 @@ import { PageBranding } from '../components/common/PageBranding';
 import { CuisineCard } from '../components/cuisine/CuisineCard';
 import { COLORS } from '../styles/theme';
 
-export const CatalogScreen = ({ categories, onSelectCategory, onBackToWelcome, onLogout }) => (
+export const CatalogScreen = ({ categories, onSelectCategory, onBackToWelcome, onLogout, onViewFavorites }) => (
   <SafeAreaView style={styles.container}>
     <StatusBar barStyle="dark-content" />
-    <Navbar onLogout={onLogout} />
+    <Navbar onLogout={onLogout} onViewFavorites={onViewFavorites} />
     
     <View style={styles.header}>
       <TouchableOpacity onPress={onBackToWelcome} style={styles.backButton}>

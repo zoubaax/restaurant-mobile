@@ -3,6 +3,7 @@ import { cuisines as initialCuisines } from './src/data/cuisines';
 import { WelcomeScreen } from './src/screens/WelcomeScreen';
 import { CatalogScreen } from './src/screens/CatalogScreen';
 import { MealExplorerScreen } from './src/screens/MealExplorerScreen';
+import { FavoritesScreen } from './src/screens/FavoritesScreen';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { RegisterScreen } from './src/screens/RegisterScreen';
 import { supabase } from './src/lib/supabase';
@@ -29,6 +30,7 @@ export default function App() {
   // Auth state
   const [user, setUser] = useState(null);
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
+  const [showFavorites, setShowFavorites] = useState(false);
 
   useEffect(() => {
     setCategories(initialCuisines);
@@ -190,6 +192,14 @@ export default function App() {
         />
       );
     }
+  } else if (showFavorites) {
+    content = (
+      <FavoritesScreen 
+        user={user} 
+        onBack={() => setShowFavorites(false)} 
+        onLogout={handleLogout}
+      />
+    );
   } else if (!selectedCategory) {
     content = (
       <CatalogScreen 
@@ -197,6 +207,7 @@ export default function App() {
         onSelectCategory={handleSelectCategory} 
         onBackToWelcome={() => setShowWelcome(true)}
         onLogout={handleLogout}
+        onViewFavorites={() => setShowFavorites(true)}
       />
     );
   } else {
@@ -226,6 +237,7 @@ export default function App() {
         onGoHome={() => setSelectedCategory(null)}
         onSaveMeal={handleSaveMeal}
         onLogout={handleLogout}
+        onViewFavorites={() => setShowFavorites(true)}
       />
     );
   }

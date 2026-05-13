@@ -36,13 +36,14 @@ export const MealExplorerScreen = ({
   onGoHome,
   allCategories,
   onSaveMeal,
-  onLogout
+  onLogout,
+  onViewFavorites
 }) => {
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="dark-content" />
-        <Navbar onLogout={onLogout} />
+        <Navbar onLogout={onLogout} onViewFavorites={onViewFavorites} />
         <View style={styles.header}>
           <TouchableOpacity onPress={onBackToCatalog} style={styles.backButton}>
             <Feather name="arrow-left" size={20} color={COLORS.text} />
@@ -68,7 +69,7 @@ export const MealExplorerScreen = ({
   if (meals.length === 0) {
     return (
       <SafeAreaView style={styles.container}>
-        <Navbar onLogout={onLogout} />
+        <Navbar onLogout={onLogout} onViewFavorites={onViewFavorites} />
         <View style={styles.header}>
           <TouchableOpacity onPress={onBackToCatalog} style={styles.backButton}>
             <Feather name="arrow-left" size={20} color={COLORS.text} />
@@ -92,7 +93,7 @@ export const MealExplorerScreen = ({
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <Navbar onLogout={onLogout} />
+      <Navbar onLogout={onLogout} onViewFavorites={onViewFavorites} />
       
       <View style={styles.header}>
         <TouchableOpacity onPress={onBackToCatalog} style={styles.backButton}>
