@@ -15,7 +15,7 @@ import { supabase } from '../lib/supabase';
 import { COLORS } from '../styles/theme';
 import { Navbar } from '../components/common/Navbar';
 
-export const FavoritesScreen = ({ user, onBack, onLogout }) => {
+export const FavoritesScreen = ({ user, accessToken, onBack, onLogout }) => {
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -25,7 +25,7 @@ export const FavoritesScreen = ({ user, onBack, onLogout }) => {
 
   const fetchFavorites = async () => {
     setLoading(true);
-    const { data, error } = await supabase.select('favorites', `user_id=eq.${user.id}`);
+    const { data, error } = await supabase.select('favorites', `user_id=eq.${user.id}`, accessToken);
     if (!error) {
       setFavorites(data);
     }
@@ -33,7 +33,7 @@ export const FavoritesScreen = ({ user, onBack, onLogout }) => {
   };
 
   const removeFavorite = async (id) => {
-    const { error } = await supabase.delete('favorites', `id=eq.${id}`);
+    const { error } = await supabase.delete('favorites', `id=eq.${id}`, accessToken);
     if (!error) {
       setFavorites(favorites.filter(item => item.id !== id));
     }

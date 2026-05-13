@@ -29,6 +29,7 @@ export default function App() {
 
   // Auth state
   const [user, setUser] = useState(null);
+  const [accessToken, setAccessToken] = useState(null);
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
   const [showFavorites, setShowFavorites] = useState(false);
 
@@ -122,6 +123,7 @@ export default function App() {
       setNotification({ visible: true, message: error.message, type: 'error' });
     } else {
       setUser(data.user);
+      setAccessToken(data.access_token);
       setNotification({ visible: true, message: 'Welcome back!', type: 'success' });
     }
   }
@@ -138,6 +140,7 @@ export default function App() {
 
   function handleLogout() {
     setUser(null);
+    setAccessToken(null);
     setNotification({ visible: true, message: 'Logged out successfully', type: 'success' });
   }
 
@@ -154,7 +157,7 @@ export default function App() {
         meal_image: meal.strMealThumb,
         category: selectedCategory.name,
         user_id: user.id
-      });
+      }, accessToken);
 
       if (error) throw error;
       
@@ -196,6 +199,7 @@ export default function App() {
     content = (
       <FavoritesScreen 
         user={user} 
+        accessToken={accessToken}
         onBack={() => setShowFavorites(false)} 
         onLogout={handleLogout}
       />

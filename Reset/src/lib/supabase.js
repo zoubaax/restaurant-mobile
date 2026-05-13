@@ -1,17 +1,18 @@
 /**
  * Lightweight Supabase REST client for React Native.
  * Uses fetch directly instead of the SDK to avoid Node.js polyfill issues.
+ * Supports authenticated requests using the user's access token.
  */
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
-const headers = {
+const getHeaders = (accessToken) => ({
   'apikey': SUPABASE_ANON_KEY,
-  'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+  'Authorization': `Bearer ${accessToken || SUPABASE_ANON_KEY}`,
   'Content-Type': 'application/json',
   'Prefer': 'return=representation',
-};
+});
 
 export const supabase = {
   /**
@@ -23,7 +24,7 @@ export const supabase = {
     try {
       const res = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
         method: 'POST',
-        headers,
+        headers: getHeaders(),
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
@@ -43,7 +44,7 @@ export const supabase = {
     try {
       const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
         method: 'POST',
-        headers,
+        headers: getHeaders(),
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
@@ -58,13 +59,14 @@ export const supabase = {
    * Insert a row into a table.
    * @param {string} table - Table name
    * @param {object} row - Data to insert
+   * @param {string} [accessToken] - User's access token for authenticated requests
    * @returns {Promise<{data: object|null, error: object|null}>}
    */
-  async insert(table, row) {
+  async insert(table, row, accessToken) {
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
         method: 'POST',
-        headers,
+        headers: getHeaders(accessToken),
         body: JSON.stringify(row),
       });
 
@@ -84,9 +86,10 @@ export const supabase = {
    * Select rows from a table.
    * @param {string} table - Table name
    * @param {string} [query=''] - PostgREST query string, e.g. 'meal_id=eq.12345'
+   * @param {string} [accessToken] - User's access token for authenticated requests
    * @returns {Promise<{data: array|null, error: object|null}>}
    */
-  async select(table, query = '') {
+  async select(table, query = '', accessToken) {
     try {
       const url = query
         ? `${SUPABASE_URL}/rest/v1/${table}?${query}`
@@ -94,7 +97,7 @@ export const supabase = {
 
       const res = await fetch(url, {
         method: 'GET',
-        headers,
+        headers: getHeaders(accessToken),
       });
 
       if (!res.ok) {
@@ -113,13 +116,14 @@ export const supabase = {
    * Delete rows from a table.
    * @param {string} table - Table name
    * @param {string} query - PostgREST query string, e.g. 'meal_id=eq.12345'
+   * @param {string} [accessToken] - User's access token for authenticated requests
    * @returns {Promise<{data: object|null, error: object|null}>}
    */
-  async delete(table, query) {
+  async delete(table, query, accessToken) {
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, {
         method: 'DELETE',
-        headers,
+        headers: getHeaders(accessToken),
       });
 
       if (!res.ok) {
