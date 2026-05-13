@@ -4,6 +4,7 @@ import { WelcomeScreen } from './src/screens/WelcomeScreen';
 import { CatalogScreen } from './src/screens/CatalogScreen';
 import { MealExplorerScreen } from './src/screens/MealExplorerScreen';
 import { supabase } from './src/lib/supabase';
+import { Notification } from './src/components/common/Notification';
 
 export default function App() {
   const [showWelcome, setShowWelcome] = useState(true);
@@ -15,6 +16,13 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [mealDetails, setMealDetails] = useState(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
+  
+  // Notification state
+  const [notification, setNotification] = useState({
+    visible: false,
+    message: '',
+    type: 'success'
+  });
 
   useEffect(() => {
     setCategories(initialCuisines);
@@ -110,52 +118,72 @@ export default function App() {
       });
 
       if (error) throw error;
-      alert('Meal saved to favorites!');
+      
+      setNotification({
+        visible: true,
+        message: 'Meal saved to favorites!',
+        type: 'success'
+      });
     } catch (error) {
       console.error('Error saving meal:', error);
-      alert('Error saving meal: ' + error.message);
+      setNotification({
+        visible: true,
+        message: 'Error: ' + error.message,
+        type: 'error'
+      });
     }
   }
 
+  let content;
   if (showWelcome) {
-    return <WelcomeScreen onEnter={() => setShowWelcome(false)} />;
-  }
-
-  if (!selectedCategory) {
-    return (
+    content = <WelcomeScreen onEnter={() => setShowWelcome(false)} />;
+  } else if (!selectedCategory) {
+    content = (
       <CatalogScreen 
         categories={categories} 
         onSelectCategory={handleSelectCategory} 
         onBackToWelcome={() => setShowWelcome(true)}
       />
     );
+  } else {
+    content = (
+      <MealExplorerScreen 
+        allCategories={categories}
+        selectedCategory={selectedCategory}
+        meals={meals}
+        mealIndex={mealIndex}
+        loading={loading}
+        showMore={showMore}
+        mealDetails={mealDetails}
+        loadingDetails={loadingDetails}
+        onBackToCatalog={() => setSelectedCategory(null)}
+        onNextClick={() => {
+          setMealIndex((mealIndex + 1) % meals.length);
+          setShowMore(false);
+          setMealDetails(null);
+        }}
+        onPrevClick={() => {
+          setMealIndex((mealIndex - 1 + meals.length) % meals.length);
+          setShowMore(false);
+          setMealDetails(null);
+        }}
+        onToggleShowMore={toggleShowMore}
+        onSelectCategory={handleSelectCategory}
+        onGoHome={() => setSelectedCategory(null)}
+        onSaveMeal={handleSaveMeal}
+      />
+    );
   }
 
   return (
-    <MealExplorerScreen 
-      allCategories={categories}
-      selectedCategory={selectedCategory}
-      meals={meals}
-      mealIndex={mealIndex}
-      loading={loading}
-      showMore={showMore}
-      mealDetails={mealDetails}
-      loadingDetails={loadingDetails}
-      onBackToCatalog={() => setSelectedCategory(null)}
-      onNextClick={() => {
-        setMealIndex((mealIndex + 1) % meals.length);
-        setShowMore(false);
-        setMealDetails(null);
-      }}
-      onPrevClick={() => {
-        setMealIndex((mealIndex - 1 + meals.length) % meals.length);
-        setShowMore(false);
-        setMealDetails(null);
-      }}
-      onToggleShowMore={toggleShowMore}
-      onSelectCategory={handleSelectCategory}
-      onGoHome={() => setSelectedCategory(null)}
-      onSaveMeal={handleSaveMeal}
-    />
+    <>
+      {content}
+      <Notification 
+        visible={notification.visible}
+        message={notification.message}
+        type={notification.type}
+        onHide={() => setNotification({ ...notification, visible: false })}
+      />
+    </>
   );
 }
