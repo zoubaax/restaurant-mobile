@@ -34,7 +34,8 @@ export const MealExplorerScreen = ({
   onToggleShowMore,
   onSelectCategory,
   onGoHome,
-  allCategories
+  allCategories,
+  onSaveMeal
 }) => {
   if (loading) {
     return (
@@ -116,20 +117,31 @@ export const MealExplorerScreen = ({
 
           <View style={styles.detailsContainer}>
             <Text style={styles.dishName}>{dish.strMeal}</Text>
-            {mealDetails && (mealDetails.strArea || selectedCategory.name) && (
+             {mealDetails && (mealDetails.strArea || selectedCategory.name) && (
               <Text style={styles.chefName}>Origin: {mealDetails.strArea || selectedCategory.name}</Text>
             )}
             
-            <TouchableOpacity 
-              style={styles.moreButton} 
-              onPress={() => onToggleShowMore(dish.idMeal)}
-              activeOpacity={0.7}
-            >
-              <Feather name={showMore ? "eye-off" : "eye"} size={16} color={COLORS.primary} style={{ marginRight: 6 }} />
-              <Text style={styles.moreButtonText}>
-                {showMore ? 'Hide' : 'Show'} Details
-              </Text>
-            </TouchableOpacity>
+            <View style={styles.actionButtons}>
+              <TouchableOpacity 
+                style={styles.moreButton} 
+                onPress={() => onToggleShowMore(dish.idMeal)}
+                activeOpacity={0.7}
+              >
+                <Feather name={showMore ? "eye-off" : "eye"} size={16} color={COLORS.primary} style={{ marginRight: 6 }} />
+                <Text style={styles.moreButtonText}>
+                  {showMore ? 'Hide' : 'Show'} Details
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={styles.saveButton} 
+                onPress={() => onSaveMeal(dish)}
+                activeOpacity={0.7}
+              >
+                <Feather name="heart" size={18} color={COLORS.primary} />
+                <Text style={styles.saveButtonText}>Save</Text>
+              </TouchableOpacity>
+            </View>
 
             {loadingDetails && (
               <ActivityIndicator size="small" color={COLORS.primary} style={{ marginTop: 10, alignSelf: 'flex-start' }} />
@@ -287,6 +299,26 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.primary,
     fontWeight: '700',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  saveButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.badgeBg,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  saveButtonText: {
+    fontSize: 14,
+    color: COLORS.primary,
+    fontWeight: '700',
+    marginLeft: 6,
   },
   descriptionContainer: {
     marginTop: 8,

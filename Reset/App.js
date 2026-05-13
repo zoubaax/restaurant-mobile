@@ -3,6 +3,7 @@ import { cuisines as initialCuisines } from './src/data/cuisines';
 import { WelcomeScreen } from './src/screens/WelcomeScreen';
 import { CatalogScreen } from './src/screens/CatalogScreen';
 import { MealExplorerScreen } from './src/screens/MealExplorerScreen';
+import { supabase } from './src/lib/supabase';
 
 export default function App() {
   const [showWelcome, setShowWelcome] = useState(true);
@@ -99,6 +100,27 @@ export default function App() {
     setShowMore(!showMore);
   }
 
+  async function handleSaveMeal(meal) {
+    try {
+      const { data, error } = await supabase
+        .from('favorites')
+        .insert([
+          { 
+            meal_id: meal.idMeal, 
+            meal_name: meal.strMeal, 
+            meal_image: meal.strMealThumb,
+            category: selectedCategory.name
+          }
+        ]);
+        
+      if (error) throw error;
+      alert('Meal saved to favorites!');
+    } catch (error) {
+      console.error('Error saving meal:', error);
+      alert('Error saving meal: ' + error.message);
+    }
+  }
+
   if (showWelcome) {
     return <WelcomeScreen onEnter={() => setShowWelcome(false)} />;
   }
@@ -137,6 +159,7 @@ export default function App() {
       onToggleShowMore={toggleShowMore}
       onSelectCategory={handleSelectCategory}
       onGoHome={() => setSelectedCategory(null)}
+      onSaveMeal={handleSaveMeal}
     />
   );
 }
