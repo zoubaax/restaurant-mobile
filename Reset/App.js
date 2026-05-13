@@ -30,7 +30,8 @@ export default function App() {
     if (areaName === 'Marocain') areaName = 'Moroccan';
     if (areaName === 'American') areaName = 'United States';
     
-    fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?a=${areaName}`)
+    const API_URL = process.env.EXPO_PUBLIC_MEAL_API_URL;
+    fetch(`${API_URL}/filter.php?a=${areaName}`)
       .then(res => res.json())
       .then(data => {
         if (data.meals && data.meals.length > 0) {
@@ -78,7 +79,8 @@ export default function App() {
 
       if (!mealDetails || mealDetails.idMeal !== idMeal) {
         setLoadingDetails(true);
-        fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${idMeal}`)
+        const API_URL = process.env.EXPO_PUBLIC_MEAL_API_URL;
+        fetch(`${API_URL}/lookup.php?i=${idMeal}`)
           .then(res => res.json())
           .then(data => {
             if (data.meals && data.meals.length > 0) {
