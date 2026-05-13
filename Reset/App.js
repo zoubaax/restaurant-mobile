@@ -48,11 +48,32 @@ export default function App() {
     fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?a=${areaName}`)
       .then(res => res.json())
       .then(data => {
-        setMeals(data.meals || []);
+        if (data.meals && data.meals.length > 0) {
+          setMeals(data.meals);
+        } else {
+          // Fallback to local meals from data.js
+          const localMeals = category.meals.map((m, index) => ({
+            strMeal: m.name,
+            strMealThumb: m.url,
+            idMeal: `local-${category.id}-${index}`,
+            isLocal: true,
+            ...m
+          }));
+          setMeals(localMeals);
+        }
         setLoading(false);
       })
       .catch(err => {
         console.error(err);
+        // Fallback on error
+        const localMeals = category.meals.map((m, index) => ({
+          strMeal: m.name,
+          strMealThumb: m.url,
+          idMeal: `local-${category.id}-${index}`,
+          isLocal: true,
+          ...m
+        }));
+        setMeals(localMeals);
         setLoading(false);
       });
   }
@@ -87,6 +108,20 @@ export default function App() {
 
   function toggleShowMore(idMeal) {
     if (!showMore) {
+      // Check if it's a local meal
+      const currentMeal = meals[mealIndex];
+      if (currentMeal && currentMeal.isLocal) {
+        // For local meals, we already have the details
+        setMealDetails({
+          strInstructions: currentMeal.description,
+          strArea: selectedCategory.name,
+          isLocal: true,
+          ...currentMeal
+        });
+        setShowMore(true);
+        return;
+      }
+
       if (!mealDetails || mealDetails.idMeal !== idMeal) {
         setLoadingDetails(true);
         fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${idMeal}`)
@@ -343,21 +378,32 @@ export default function App() {
 
             {showMore && mealDetails && (
               <View style={styles.descriptionContainer}>
-                <Text style={styles.sectionTitle}>Ingredients:</Text>
-                {Array.from({ length: 20 }).map((_, i) => {
-                  const ingredient = mealDetails[`strIngredient${i + 1}`];
-                  const measure = mealDetails[`strMeasure${i + 1}`];
-                  if (ingredient && ingredient.trim() !== '') {
-                    return (
-                      <Text key={i} style={styles.ingredientText}>
-                        • {measure} {ingredient}
-                      </Text>
-                    );
-                  }
-                  return null;
-                })}
-                <Text style={[styles.sectionTitle, { marginTop: 16 }]}>Instructions:</Text>
-                <Text style={styles.description}>{mealDetails.strInstructions}</Text>
+                {mealDetails.isLocal ? (
+                  <>
+                    <Text style={styles.sectionTitle}>Description:</Text>
+                    <Text style={styles.description}>{mealDetails.strInstructions}</Text>
+                    <Text style={[styles.sectionTitle, { marginTop: 16 }]}>Specialty Chef:</Text>
+                    <Text style={styles.ingredientText}>• {mealDetails.chef}</Text>
+                  </>
+                ) : (
+                  <>
+                    <Text style={styles.sectionTitle}>Ingredients:</Text>
+                    {Array.from({ length: 20 }).map((_, i) => {
+                      const ingredient = mealDetails[`strIngredient${i + 1}`];
+                      const measure = mealDetails[`strMeasure${i + 1}`];
+                      if (ingredient && ingredient.trim() !== '') {
+                        return (
+                          <Text key={i} style={styles.ingredientText}>
+                            • {measure} {ingredient}
+                          </Text>
+                        );
+                      }
+                      return null;
+                    })}
+                    <Text style={[styles.sectionTitle, { marginTop: 16 }]}>Instructions:</Text>
+                    <Text style={styles.description}>{mealDetails.strInstructions}</Text>
+                  </>
+                )}
               </View>
             )}
           </View>
