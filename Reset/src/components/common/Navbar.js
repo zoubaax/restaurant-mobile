@@ -3,12 +3,12 @@ import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../styles/theme';
 
-export const Navbar = () => (
+export const Navbar = ({ onLogout }) => (
   <View style={styles.navBar}>
     <View style={styles.navBrand}>
-      <View style={styles.logoCircle}>
-        <Feather name="coffee" size={16} color="#ffffff" />
-      </View>
+      <TouchableOpacity style={styles.logoCircle} onPress={onLogout}>
+        <Feather name="log-out" size={16} color="#ffffff" />
+      </TouchableOpacity>
     </View>
     <TouchableOpacity style={styles.profileButton}>
       <Image 

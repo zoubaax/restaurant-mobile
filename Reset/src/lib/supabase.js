@@ -15,6 +15,46 @@ const headers = {
 
 export const supabase = {
   /**
+   * Sign up a new user.
+   * @param {string} email
+   * @param {string} password
+   */
+  async signUp(email, password) {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) return { data: null, error: { message: data.msg || data.error_description || 'Signup failed' } };
+      return { data, error: null };
+    } catch (err) {
+      return { data: null, error: { message: err.message } };
+    }
+  },
+
+  /**
+   * Sign in an existing user.
+   * @param {string} email
+   * @param {string} password
+   */
+  async signIn(email, password) {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) return { data: null, error: { message: data.error_description || data.msg || 'Login failed' } };
+      return { data, error: null };
+    } catch (err) {
+      return { data: null, error: { message: err.message } };
+    }
+  },
+
+  /**
    * Insert a row into a table.
    * @param {string} table - Table name
    * @param {object} row - Data to insert

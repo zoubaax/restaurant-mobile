@@ -3,6 +3,8 @@ import { cuisines as initialCuisines } from './src/data/cuisines';
 import { WelcomeScreen } from './src/screens/WelcomeScreen';
 import { CatalogScreen } from './src/screens/CatalogScreen';
 import { MealExplorerScreen } from './src/screens/MealExplorerScreen';
+import { LoginScreen } from './src/screens/LoginScreen';
+import { RegisterScreen } from './src/screens/RegisterScreen';
 import { supabase } from './src/lib/supabase';
 import { Notification } from './src/components/common/Notification';
 
@@ -23,6 +25,10 @@ export default function App() {
     message: '',
     type: 'success'
   });
+
+  // Auth state
+  const [user, setUser] = useState(null);
+  const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
 
   useEffect(() => {
     setCategories(initialCuisines);
@@ -108,13 +114,44 @@ export default function App() {
     setShowMore(!showMore);
   }
 
+  async function handleLogin(email, password) {
+    const { data, error } = await supabase.signIn(email, password);
+    if (error) {
+      setNotification({ visible: true, message: error.message, type: 'error' });
+    } else {
+      setUser(data.user);
+      setNotification({ visible: true, message: 'Welcome back!', type: 'success' });
+    }
+  }
+
+  async function handleRegister(email, password) {
+    const { data, error } = await supabase.signUp(email, password);
+    if (error) {
+      setNotification({ visible: true, message: error.message, type: 'error' });
+    } else {
+      setNotification({ visible: true, message: 'Account created! Please login.', type: 'success' });
+      setAuthMode('login');
+    }
+  }
+
+  function handleLogout() {
+    setUser(null);
+    setNotification({ visible: true, message: 'Logged out successfully', type: 'success' });
+  }
+
   async function handleSaveMeal(meal) {
+    if (!user) {
+      setNotification({ visible: true, message: 'Please login to save meals', type: 'error' });
+      return;
+    }
+
     try {
       const { data, error } = await supabase.insert('favorites', {
         meal_id: meal.idMeal,
         meal_name: meal.strMeal,
         meal_image: meal.strMealThumb,
         category: selectedCategory.name,
+        user_id: user.id
       });
 
       if (error) throw error;
@@ -137,12 +174,29 @@ export default function App() {
   let content;
   if (showWelcome) {
     content = <WelcomeScreen onEnter={() => setShowWelcome(false)} />;
+  } else if (!user) {
+    if (authMode === 'login') {
+      content = (
+        <LoginScreen 
+          onLogin={handleLogin} 
+          onSwitchToRegister={() => setAuthMode('register')} 
+        />
+      );
+    } else {
+      content = (
+        <RegisterScreen 
+          onRegister={handleRegister} 
+          onSwitchToLogin={() => setAuthMode('login')} 
+        />
+      );
+    }
   } else if (!selectedCategory) {
     content = (
       <CatalogScreen 
         categories={categories} 
         onSelectCategory={handleSelectCategory} 
         onBackToWelcome={() => setShowWelcome(true)}
+        onLogout={handleLogout}
       />
     );
   } else {
@@ -171,6 +225,7 @@ export default function App() {
         onSelectCategory={handleSelectCategory}
         onGoHome={() => setSelectedCategory(null)}
         onSaveMeal={handleSaveMeal}
+        onLogout={handleLogout}
       />
     );
   }
