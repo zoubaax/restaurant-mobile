@@ -1,3 +1,4 @@
+import 'react-native-url-polyfill/auto';
 import React, { useState, useEffect } from 'react';
 import { cuisines as initialCuisines } from './src/data/cuisines';
 import { WelcomeScreen } from './src/screens/WelcomeScreen';
